@@ -8,7 +8,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // إعدادات فايربيز الخاصة بمشروعك
     const firebaseConfig = {
       apiKey: "AIzaSyBgw-v0bC9ki-xLvm0mP_7FHklnqtxnWPw",
       authDomain: "quarry-approval-system.firebaseapp.com",
@@ -25,8 +24,8 @@
       const container = document.getElementById('clients-list');
       container.innerHTML = '<p class="text-center py-4 text-gray-600">جاري تحميل بيانات المقالع...</p>';
       try {
-        // جلب البيانات من جدول quarry_licenses
-        const querySnapshot = await getDocs(collection(db, "quarry_licenses"));
+        // تم تغيير اسم الجدول هنا ليطابق quarries الظاهر في صورتك
+        const querySnapshot = await getDocs(collection(db, "quarries"));
         let html = '';
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
@@ -34,7 +33,7 @@
           html += `
             <div class="bg-white p-4 rounded-lg shadow mb-3 flex justify-between items-center border border-gray-200">
               <div>
-                <p class="font-bold text-gray-800">اسم المقلع: <span class="text-blue-600">${data.quarryName || 'غير متوفر'}</span></p>
+                <p class="font-bold text-gray-800">اسم المقلع: <span class="text-blue-600">${data.name || 'غير متوفر'}</span></p>
                 <p class="text-sm text-gray-600">معرف الجهاز: <span class="font-mono text-xs bg-gray-100 p-1 rounded">${id}</span></p>
                 <p class="text-sm text-gray-600">الحالة: <span class="font-semibold text-amber-600">${data.status || 'تجريبي'}</span></p>
               </div>
@@ -53,7 +52,7 @@
 
     window.approveClient = async function(machineId) {
       try {
-        const docRef = doc(db, "quarry_licenses", machineId);
+        const docRef = doc(db, "quarries", machineId);
         await updateDoc(docRef, { status: "approved" });
         alert("تمت الموافقة وتفعيل المقلع بنجاح!");
         loadClients();
