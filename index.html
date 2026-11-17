@@ -4,19 +4,18 @@
   <meta charset="UTF-8">
   <title>لوحة تحكم المشرف - نظام المقالع</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <!-- ربط فايربيز (تأكد من مطابقة إعدادات الفايربيز لديك هنا) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // إعدادات فايربيز الخاصة بمشروعك (نفس الإعدادات الموجودة في مشروع المقالع)
+    // إعدادات فايربيز الخاصة بمشروعك
     const firebaseConfig = {
-      apiKey: "ضع_مفتاحك_هنا",
-      authDomain: "ضع_مشروعك_هنا.firebaseapp.com",
-      projectId: "ضع_معرف_المشروع_هنا",
-      storageBucket: "ضع_المشروع_هنا.appspot.com",
-      messagingSenderId: "...",
-      appId: "..."
+      apiKey: "AIzaSyBgw-v0bC9ki-xLvm0mP_7FHklnqtxnWPw",
+      authDomain: "quarry-approval-system.firebaseapp.com",
+      projectId: "quarry-approval-system",
+      storageBucket: "quarry-approval-system.firebasestorage.app",
+      messagingSenderId: "761223804419",
+      appId: "1:761223804419:web:5cf6159a2907f43682c036"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -24,29 +23,31 @@
 
     window.loadClients = async function() {
       const container = document.getElementById('clients-list');
-      container.innerHTML = '<p class="text-center py-4">جاري تحميل بيانات المقالع...</p>';
+      container.innerHTML = '<p class="text-center py-4 text-gray-600">جاري تحميل بيانات المقالع...</p>';
       try {
+        // جلب البيانات من جدول quarry_licenses
         const querySnapshot = await getDocs(collection(db, "quarry_licenses"));
         let html = '';
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const id = docSnap.id;
           html += `
-            <div class="bg-white p-4 rounded-lg shadow mb-3 flex justify-between items-center">
+            <div class="bg-white p-4 rounded-lg shadow mb-3 flex justify-between items-center border border-gray-200">
               <div>
-                <p class="font-bold text-gray-800">معرف الجهاز: <span class="text-blue-600 font-mono">${id}</span></p>
+                <p class="font-bold text-gray-800">اسم المقلع: <span class="text-blue-600">${data.quarryName || 'غير متوفر'}</span></p>
+                <p class="text-sm text-gray-600">معرف الجهاز: <span class="font-mono text-xs bg-gray-100 p-1 rounded">${id}</span></p>
                 <p class="text-sm text-gray-600">الحالة: <span class="font-semibold text-amber-600">${data.status || 'تجريبي'}</span></p>
-                <p class="text-xs text-gray-400">تاريخ التسجيل: ${data.createdAt || 'غير محدد'}</p>
               </div>
               <div>
-                <button onclick="approveClient('${id}')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">موافقة وتفعيل</button>
+                <button onclick="approveClient('${id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow">موافقة وتفعيل</button>
               </div>
             </div>
           `;
         });
         container.innerHTML = html || '<p class="text-center py-4 text-gray-500">لا توجد مقالع مسجلة حتى الآن.</p>';
       } catch (e) {
-        container.innerHTML = '<p class="text-center py-4 text-red-500">خطأ في جلب البيانات، تأكد من إعدادات الاتصال.</p>';
+        console.error(e);
+        container.innerHTML = '<p class="text-center py-4 text-red-500">خطأ في جلب البيانات، تأكد من اتصال قاعدة البيانات.</p>';
       }
     };
 
@@ -62,7 +63,6 @@
     };
 
     window.onload = function() {
-      // يمكنك وضع تحقق بسيط من كلمة مرور هنا إذا رغبت
       loadClients();
     };
   </script>
@@ -71,7 +71,7 @@
   <div class="max-w-4xl mx-auto p-6">
     <header class="bg-slate-800 text-white p-4 rounded-lg shadow mb-6 flex justify-between items-center">
       <h1 class="text-xl font-bold">لوحة تحكم إدارة المقالع المركزية</h1>
-      <button onclick="loadClients()" class="bg-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-600">تحديث البيانات</button>
+      <button onclick="loadClients()" class="bg-slate-700 px-4 py-2 rounded text-sm hover:bg-slate-600 transition">تحديث البيانات</button>
     </header>
     
     <main>
